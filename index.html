@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Login Portal</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            text-align: center;
+            margin-top: 100px;
+        }
+        .login-box {
+            background: rgba(255,255,255,0.95);
+            padding: 30px;
+            width: 320px;
+            margin: auto;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            transition: 0.3s;
+        }
+        h2 {
+            color: #1e3c72;
+            margin-bottom: 20px;
+        }
+        input {
+            width: 90%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 25px;
+            font-size: 16px;
+            outline: none;
+        }
+        input:focus {
+            border-color: #2a5298;
+            box-shadow: 0 0 8px rgba(42,82,152,0.3);
+        }
+        button {
+            padding: 12px;
+            width: 95%;
+            background-color: #ff9800;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        button:hover {
+            background-color: #e68900;
+            transform: scale(1.02);
+        }
+        button:disabled {
+            background-color: #aaa;
+            cursor: not-allowed;
+        }
+        #message {
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        .attempt-counter {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <h2>🔐 Student Login Portal</h2>
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+        <button id="loginBtn" onclick="login()">Login</button>
+        <p id="message"></p>
+        <div class="attempt-counter" id="attemptDisplay"></div>
+    </div>
+
+    <script>
+        // ----- TASK 1 & 2: 3 users (Jigger/2004 + two extra)
+        const users = [
+            { username: "Jigger", password: "2004" },   // <-- Your credential
+            { username: "student1", password: "1111" },
+            { username: "student2", password: "2222" }
+        ];
+
+        // ----- TASK 3: Attempts limit
+        let attemptsLeft = 3;
+        let isLocked = false;
+
+        function updateAttemptDisplay() {
+            const display = document.getElementById("attemptDisplay");
+            if (isLocked) {
+                display.innerHTML = "🔒 Account Locked! 🔒";
+                display.style.color = "red";
+            } else {
+                display.innerHTML = `Attempts remaining: ${attemptsLeft}`;
+                display.style.color = "#555";
+            }
+        }
+
+        // ----- TASK 5: Welcome message with username
+        function showWelcome(username) {
+            document.getElementById("message").innerHTML = `🎉 Welcome, ${username}! 🎉`;
+            document.getElementById("message").style.color = "green";
+        }
+
+        function login() {
+            if (isLocked) {
+                document.getElementById("message").innerHTML = "Account Locked! Please contact support.";
+                document.getElementById("message").style.color = "red";
+                return;
+            }
+
+            if (attemptsLeft <= 0) {
+                isLocked = true;
+                document.getElementById("loginBtn").disabled = true;
+                document.getElementById("message").innerHTML = "Account Locked!";
+                document.getElementById("message").style.color = "red";
+                updateAttemptDisplay();
+                return;
+            }
+
+            const user = document.getElementById("username").value.trim();
+            const pass = document.getElementById("password").value.trim();
+
+            let validUser = null;
+            for (let i = 0; i < users.length; i++) {
+                if (users[i].username === user && users[i].password === pass) {
+                    validUser = user;
+                    break;
+                }
+            }
+
+            if (validUser) {
+                showWelcome(validUser);
+                attemptsLeft = 3;      // reset attempts on success
+                updateAttemptDisplay();
+            } else {
+                attemptsLeft--;
+                updateAttemptDisplay();
+
+                if (attemptsLeft <= 0) {
+                    isLocked = true;
+                    document.getElementById("loginBtn").disabled = true;
+                    document.getElementById("message").innerHTML = "Account Locked! Too many failed attempts.";
+                    document.getElementById("message").style.color = "red";
+                    updateAttemptDisplay();
+                } else {
+                    document.getElementById("message").innerHTML = `Invalid Username or Password! ${attemptsLeft} attempt(s) left.`;
+                    document.getElementById("message").style.color = "red";
+                }
+            }
+        }
+
+        updateAttemptDisplay();
+    </script>
+</body>
+</html>
